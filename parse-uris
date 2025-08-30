@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# This script parses a JSON file to extract all URI links.
+
+# Check if no file arguments were provided AND if input is not being piped in.
+# -z "$1": True if the first argument is empty.
+# -t 0: True if standard input is a terminal (not a pipe).
+if [ -z "$1" ] && [ -t 0 ]; then
+    # Print a help message to standard error (>&2).
+    echo "Hint: Provide a JSON file or pipe data into this command." >&2
+    echo "Usage:" >&2
+    echo "  get-uris <your_file.json>" >&2
+    echo "  cat <your_file.json> | get-uris" >&2
+    # Exit with an error code.
+    exit 1
+fi
+
+# Run the jq command.
+# "$@" automatically handles all file arguments passed to the script.
+# If no arguments are given, jq reads from standard input (the pipe) by default.
+jq -r '.. | objects | .uri? // empty' "$@"
